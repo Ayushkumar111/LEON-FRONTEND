@@ -1,0 +1,297 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Parisienne&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Italianno Font Definition */
+@font-face {
+  font-family: 'Italianno';
+  src: url('/fonts/Italianno-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Montserrat', Arial, Helvetica, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif; /* Yeh ensure karta hai poore body ka font Montserrat hai */
+}
+
+/* Sirf specific classes ke liye custom fonts */
+.italianno-regular {
+  font-family: 'Italianno', cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Parisienne class agar kahi use ho rahi hai toh */
+.parisienne-font {
+  font-family: 'Parisienne', cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Header Search Animation Styles */
+.shadow-2xl {
+  animation: cardPop 220ms cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes cardPop {
+  from { 
+    opacity: 0; 
+    transform: translateY(-6px) scale(.995); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+.animated-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.14s ease-in-out;
+}
+
+.animated-underline:hover::after {
+  width: 100%;
+}
+
+/* Mobile responsive styles for search card */
+@media (max-width: 768px) {
+  .search-card-mobile {
+    margin: 0 8px;
+    max-width: calc(100% - 32px);
+  }
+}
+
+/* ========================================
+   REVIEWS SECTION STYLES
+   ======================================== */
+
+/* Star Rating Component */
+.star-rating {
+  user-select: none;
+}
+
+.star-rating span {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Review Form Styles */
+.review-form {
+  transition: all 0.3s ease;
+}
+
+.review-form:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Review Card Styles */
+.review-card {
+  transition: all 0.3s ease;
+}
+
+.review-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.review-text {
+  line-height: 1.7;
+}
+
+/* Helpful Buttons */
+.helpful-buttons button {
+  user-select: none;
+  font-size: 0.875rem;
+}
+
+.helpful-buttons button:active {
+  transform: scale(0.95);
+}
+
+/* Rating Distribution */
+.rating-distribution {
+  transition: all 0.3s ease;
+}
+
+.average-rating-box {
+  min-width: 200px;
+}
+
+.rating-bars .h-3 {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Backdrop */
+.fixed.inset-0 {
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Pagination Buttons */
+.pagination button {
+  min-width: 40px;
+}
+
+.pagination button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* Reviews Loading State */
+.reviews-list .animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Empty State Styles */
+.reviews-list .text-center {
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments for reviews */
+@media (max-width: 768px) {
+  .review-card {
+    padding: 1rem;
+  }
+
+  .helpful-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .helpful-buttons button {
+    width: 100%;
+  }
+
+  .rating-distribution {
+    padding: 1rem;
+  }
+
+  .average-rating-box {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .rating-bars {
+    padding-top: 0;
+  }
+}
+
+/* Focus styles for accessibility */
+.review-form input:focus,
+.review-form textarea:focus,
+.review-form select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(185, 150, 93, 0.2);
+}
+
+/* Report Modal Animation */
+.fixed .bg-white {
+  animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Star hover effect */
+.star-rating span:hover ~ span {
+  color: inherit;
+}
+
+/* Review submission success animation */
+@keyframes successPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for review text areas */
+.review-form textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.review-form textarea::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.review-form textarea::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.review-form textarea::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
