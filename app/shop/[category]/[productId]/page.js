@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "../../../components/Header";
@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 
 export default function ProductPage() {
   const params = useParams();
+  const router = useRouter();
   const { category, productId } = params;
 
   const [product, setProduct] = useState(null);
@@ -39,6 +40,12 @@ export default function ProductPage() {
   
   // Check if user is admin
   const isAdmin = user?.roles?.includes('admin');
+
+  // Handle redirect to login for non-authenticated users
+  const handleLoginRedirect = () => {
+    toast.error('Please login to add items to cart');
+    router.push('/auth');
+  };
 
   // Get available variants
   const availableVariants = product?.variants?.filter(v => v.isAvailable !== false) || [];
@@ -138,7 +145,13 @@ export default function ProductPage() {
 
   // FIXED: Quantity update with proper stock validation
   const handleIncreaseQuantity = async () => {
-    if (!product || !isAuthenticated() || isUpdatingQuantity) {
+    if (!product || isUpdatingQuantity) {
+      return;
+    }
+
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      handleLoginRedirect();
       return;
     }
 
@@ -172,7 +185,13 @@ export default function ProductPage() {
   };
 
   const handleDecreaseQuantity = async () => {
-    if (!product || !isAuthenticated() || isUpdatingQuantity) {
+    if (!product || isUpdatingQuantity) {
+      return;
+    }
+
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      handleLoginRedirect();
       return;
     }
 
@@ -204,7 +223,13 @@ export default function ProductPage() {
 
   // Handle remove from cart
   const handleRemoveFromCart = async () => {
-    if (!product || !isAuthenticated() || !currentVariantCartItem || isUpdatingQuantity) {
+    if (!product || !currentVariantCartItem || isUpdatingQuantity) {
+      return;
+    }
+
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      handleLoginRedirect();
       return;
     }
 
@@ -222,7 +247,13 @@ export default function ProductPage() {
 
   // Handle Add to Cart when quantity is 0
   const handleAddToCart = async () => {
-    if (!product || !isAuthenticated() || isAddingToCart) {
+    if (!product || isAddingToCart) {
+      return;
+    }
+
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      handleLoginRedirect();
       return;
     }
 
@@ -790,7 +821,7 @@ export default function ProductPage() {
                     {/* LEFT BUTTON: Delete when quantity is 0 or 1, Minus when quantity > 1 */}
                     <button
                       onClick={quantity === 0 || quantity === 1 ? handleRemoveFromCart : handleDecreaseQuantity}
-                      disabled={quantity === 0 || !isAuthenticated() || isUpdatingQuantity}
+                      disabled={quantity === 0 || isUpdatingQuantity}
                       className={`px-3 py-2 transition ${
                         quantity === 0 || quantity === 1 
                           ? 'hover:bg-red-50 text-red-600' 
@@ -817,7 +848,7 @@ export default function ProductPage() {
                     
                     <button
                       onClick={handleIncreaseQuantity}
-                      disabled={quantity >= currentStock || !isAuthenticated() || isUpdatingQuantity}
+                      disabled={quantity >= currentStock || isUpdatingQuantity}
                       className="px-3 py-2 hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isUpdatingQuantity ? (
@@ -851,9 +882,9 @@ export default function ProductPage() {
                 {quantity === 0 && (
                   <button 
                     onClick={handleAddToCart}
-                    disabled={currentStock === 0 || !isAuthenticated() || isAddingToCart}
+                    disabled={currentStock === 0 || isAddingToCart}
                     className={`w-full py-3 md:py-4 font-medium text-sm md:text-base transition flex items-center justify-center gap-2 ${
-                      currentStock > 0 && isAuthenticated() && !isAddingToCart
+                      currentStock > 0 && !isAddingToCart
                         ? 'bg-black text-white hover:bg-gray-800 cursor-pointer'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
@@ -863,8 +894,6 @@ export default function ProductPage() {
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Adding to Cart...
                       </>
-                    ) : !isAuthenticated() ? (
-                      'Login to Add to Cart'
                     ) : currentStock > 0 ? (
                       'Add to Cart'
                     ) : (

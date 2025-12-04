@@ -24,7 +24,7 @@ export default function Header() {
   // Zustand stores - DIRECTLY USE THE CART FROM STORE
   const { user, logout, isAuthenticated, checkTokenExpiry } = useAuthStore();
   const { getWishlistCount } = useWishlistStore();
-  const { cart, getCartCount } = useCartStore();
+  const { cart, getCartCount, fetchCartCount, fetchCart } = useCartStore();
 
   // SIMPLE CART COUNT - DIRECT FROM STORE
   const cartCount = isAuthenticated() ? getCartCount() : 0;
@@ -39,6 +39,11 @@ export default function Header() {
       console.log('Token expired detected in Header');
     }
     
+    // Fetch cart count on mount if authenticated (optimized API call)
+    if (isAuthenticated()) {
+      fetchCartCount();
+    }
+    
     // Subscribe to cart store changes
     const unsubscribe = useCartStore.subscribe(
       (state) => state.cart,
@@ -48,10 +53,21 @@ export default function Header() {
       }
     );
 
+    // Periodic token expiry check (every 30 seconds)
+    const tokenCheckInterval = setInterval(() => {
+      if (isAuthenticated()) {
+        const expired = checkTokenExpiry();
+        if (expired) {
+          console.log('🔐 Token expired - auto logout triggered');
+        }
+      }
+    }, 30000); // Check every 30 seconds
+
     return () => {
       unsubscribe();
+      clearInterval(tokenCheckInterval);
     };
-  }, [checkTokenExpiry]);
+  }, [checkTokenExpiry, isAuthenticated, fetchCartCount]);
 
   // Also update when auth changes
   useEffect(() => {

@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import useAuthStore from "../../lib/store/authStore";
 import useWishlistStore from "../../lib/store/wishlistStore";
 import toast from "react-hot-toast";
 
 export default function WishlistButton({ product, selectedVariant = null, size = "sm" }) {
+  const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const { addToWishlist, isInWishlist } = useWishlistStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -16,14 +18,16 @@ export default function WishlistButton({ product, selectedVariant = null, size =
     
     if (isLoading) return;
     
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      toast.error('Please login to add items to wishlist');
+      router.push('/auth');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      if (!isAuthenticated()) {
-        toast.error('Please login to add items to wishlist');
-        return;
-      }
-      
       const result = addToWishlist(product, selectedVariant);
       
       if (result.action === 'added') {

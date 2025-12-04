@@ -4,6 +4,7 @@ import Link from "next/link";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useState, useEffect } from "react";
+import { Package } from "lucide-react";
 import ProductCard from "./components/ProductCard";
 import EditProductModal from "./components/EditProductModal";
 import useAuthStore from "../lib/store/authStore";
@@ -139,46 +140,8 @@ export default function Home() {
     ));
   };
 
-  const fallbackProducts = [
-    { 
-      _id: "1",
-      title: "The Signature Tote", 
-      price: 1250,
-      category: "Handbags",
-      images: ["/images/product1.png"],
-      bestseller: true,
-      stockQuantity: 10
-    },
-    { 
-      _id: "2",
-      title: "Minimal Crossbody", 
-      price: 890,
-      category: "Handbags",
-      images: ["/images/product2.png"],
-      bestseller: true,
-      stockQuantity: 8
-    },
-    { 
-      _id: "3",
-      title: "Evening Clutch", 
-      price: 650,
-      category: "Evening",
-      images: ["/images/product3.png"],
-      bestseller: true,
-      stockQuantity: 5
-    },
-    { 
-      _id: "4",
-      title: "Travel Companion", 
-      price: 1850,
-      category: "Travel",
-      images: ["/images/product4.png"],
-      bestseller: true,
-      stockQuantity: 3
-    }
-  ];
-
-  const displayProducts = bestsellerProducts.length > 0 ? bestsellerProducts : fallbackProducts;
+  // Use only API products, no fallback
+  const displayProducts = bestsellerProducts;
 
   const getSlidesData = () => {
     const slides = [];
@@ -186,18 +149,7 @@ export default function Home() {
     
     for (let i = 0; i < displayProducts.length; i += productsPerSlide) {
       let slideProducts = displayProducts.slice(i, i + productsPerSlide);
-      
-      if (slideProducts.length < productsPerSlide) {
-        const needed = productsPerSlide - slideProducts.length;
-        const additionalProducts = fallbackProducts.slice(0, needed);
-        slideProducts = [...slideProducts, ...additionalProducts];
-      }
-      
       slides.push(slideProducts);
-    }
-    
-    if (slides.length === 0) {
-      slides.push(fallbackProducts.slice(0, productsPerSlide));
     }
     
     return slides;
@@ -301,11 +253,21 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+            ) : displayProducts.length === 0 ? (
+              <div className="text-center py-12 max-w-7xl mx-auto">
+                <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500">No bestseller products available</p>
+                <Link href="/shop">
+                  <button className="mt-4 bg-black text-white px-6 py-2 hover:bg-gray-800 transition">
+                    Browse All Products
+                  </button>
+                </Link>
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mx-auto max-w-7xl">
                 {slides[currentSlide]?.map((product, index) => (
                   <ProductCard
-                    key={product._id || `fallback-${currentSlide}-${index}`}
+                    key={product._id || `product-${currentSlide}-${index}`}
                     product={product}
                     onEdit={handleEditProduct}
                     onDelete={handleDeleteProduct}
